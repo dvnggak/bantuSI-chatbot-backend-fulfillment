@@ -1,0 +1,175 @@
+from fastapi import FastAPI
+from fastapi import Request
+from fastapi.responses import JSONResponse
+import db_helper
+
+import uuid
+
+app = FastAPI()
+
+def generate_session_id():
+    return str(uuid.uuid4())
+
+
+@app.post("/")
+async def handle(request: Request):
+    # Retrieve the JSON data from the request
+    payload = await request.json()
+
+    # Extract the necessary information from the payload
+    # based on the structure of the Webhook Request from dialogflow
+    intent = payload["queryResult"]["intent"]["displayName"]
+    parameters = payload["queryResult"]["parameters"]
+    output_contexts = payload["queryResult"]["outputContexts"]
+
+    # Get or generate the session ID
+    session_id = get_or_generate_session_id(output_contexts)
+
+
+    # Perform the necessary logic based on the intent
+    if intent == "validate.user" :
+        return validate_user(parameters, session_id)
+    elif intent == "informations.select" :
+        return informations_select(parameters, output_contexts)
+    elif intent == "track-subject" :
+        return track_subject(parameters)  
+
+def get_or_generate_session_id(output_contexts: list):
+    # Try to find the session ID in the output contexts
+    for context in output_contexts:
+        if context["name"].endswith("/contexts/session"):
+            return context["parameters"]["sessionId"]
+
+    # If not found, generate a new session ID
+    new_session_id = generate_session_id()
+    return new_session_id
+    
+def validate_user(parameters: dict, session_id: str ):
+
+    nim = parameters["number"]
+    name = db_helper.check_user_exists(nim)
+
+    if name:
+        fulfillment_text = (
+            f"Halo kak {name} :D,\n\n"
+            "Saya dapat memberikan informasi tentang beberapa hal yang ada di Prodi Sistem Informasi, diantaranya :\n\n"
+            "1. Profil Prodi \n"
+            "-Deskripsi Profil \n -Struktur Organisasi\n -Daftar Dosen\n"
+            "2. Perkuliahan\n"
+            "-Skripsi\n -Kerja Praktek\n -Mata Kuliah\n"
+            "3. Pembayaran\n"
+            "-Panduan Pembayaran\n"
+            "-Jadwal Pembayaran\n"
+            "4. Pengumuman\n"
+            "5. Berkas - Berkas Akademik\n\n"
+            "Kamu bisa membalas pesan ini dengan menuliskan daftar informasi di atas seperti \"Berikan informasi mengenai Mata Kuliah\" ..."
+        )
+        # Set the "validated" context if validation is successful
+        output_contexts = [
+            {
+                "name": f"projects/bantusi-ukoi/agent/sessions/{session_id}/contexts/validated",
+                "lifespanCount": 2,
+            }
+        ]
+    else:
+        fulfillment_text = "Maaf, sepertinya NIM kamu salah atau tidak terdaftar... \n\nSilahkan kirimkan ulang NIM kamu atau hubungi bagian administrasi ya :D."
+        output_contexts = [
+            {
+                "name": f"projects/bantusi-ukoi/agent/sessions/{session_id}/contexts/defaultwelcomeintent-followup",
+                "lifespanCount": 2,
+            }
+        ]
+
+    return JSONResponse(content={
+        "fulfillmentText": fulfillment_text,
+        "outputContexts": output_contexts,
+    })
+
+def informations_select(parameters: dict, output_contexts: list):
+    # Check for the "validated" context
+    # If it exists, then the user has been validated
+    validated_context = next((context for context in output_contexts if context["name"].endswith("/contexts/validated")), None)
+
+    # initialize the fulfillment text variable string
+
+    fulfillment_text = ""
+    if validated_context:
+        # Extract the "information" parameter
+        information_item = parameters["informations_item"]
+
+        # Perform the necessary logic based on the extracted information item
+        if information_item == "Mata Kuliah":
+            fulfillment_text = (
+                f"Baik, Bisakah Kakak menginformasi kan Kode Mata Kuliah nya ?\n\n"
+            )
+        elif information_item == "Struktur Organisasi":
+            # Sent image of the organizational structure on Telegram
+            fulfillment_text = (
+                f"Baik, Berikut adalah Struktur Organisasi Prodi Sistem Informasi : \n\n"
+                f"https://ibb.co/w6M3F4Z \n\n"
+                f"Semoga membantu ya kak :D"
+            )
+        elif information_item == "Daftar Dosen":
+            lecturers = db_helper.get_lecturers()
+            fulfillment_text = (
+                f"Baik, Berikut adalah Daftar Dosen Prodi Sistem Informasi : \n\n"
+            )
+            for lecturer in lecturers:
+                # fetch all the data and append it to the fulfillment text
+                fulfillment_text += (
+                    f"=================================== \n\n"
+                    f"NIK/NIDN : {lecturer[1]}/{lecturer[2]} \n"
+                    f"Nama : {lecturer[3]} \n"
+                    f"Jenis Kelamin : {lecturer[4]} \n\n"
+                    f"Universitas : {lecturer[5]} \n"
+                    f"Fakultas : {lecturer[6]} \n"
+                    f"Prodi : {lecturer[7]} \n\n"
+                    f"Jabatan Fungsional : {lecturer[8]} \n"
+                    f"Status Ikatan Kerja : {lecturer[9]} \n"
+                    f"Pendidikan Tertinggi : {lecturer[10]} \n"
+                    f"Status : {lecturer[11]} \n\n"
+                    f"Email : {lecturer[12]} \n"
+                    f"Nomor Telepon : {lecturer[13]} \n\n"
+                    f"=================================== \n\n"
+                )
+            if not lecturers:
+                fulfillment_text += "Tidak ada data dosen yang tersedia saat ini."
+        else:
+            fulfillment_text = "Maaf, sepertinya informasi yang kamu minta belum tersedia... \n\nSilahkan pilih informasi yang tersedia ya :D."
+    else:
+        fulfillment_text = "Maaf, sepertinya kamu belum terdaftar... \n\nSilahkan kirimkan NIM kamu ya :D."
+        output_contexts = [
+            {
+                "name": "projects/bantusi-ukoi/agent/sessions/55efc5a7-6194-8da9-896a-0f9790062aa2/contexts/defaultwelcomeintent-followup",
+                "lifespanCount": 2,
+            }
+        ]
+        
+    return JSONResponse(content={
+        "fulfillmentText": fulfillment_text,
+    })
+    
+def track_subject(parameters: dict):
+    subject_code = parameters["any"]
+    subject_data = db_helper.get_subjects(subject_code)
+
+    if subject_data:
+        fulfillment_text = (
+            f"Berikut adalah informasi mengenai mata kuliah {subject_data[2]} dengan Kode {subject_code} : \n\n"
+            f"Nama Mata Kuliah : {subject_data[2]} \n"
+            f"Jenis Kelas : {subject_data[3]} \n"
+            f"SKS : {subject_data[4]} \n"
+            f"Dosen : {subject_data[5]} \n"
+            f"Hari : {subject_data[6]} \n"
+            f"Waktu : {subject_data[7]} \n"
+            f"Link V-Class : {subject_data[8]} \n"
+            f"Kode Enrollment : {subject_data[9]} \n"
+            f"Link Group Mata Kuliah : {subject_data[10]} \n"
+        )
+    else:
+        fulfillment_text = "Maaf, sepertinya Kode Mata Kuliah yang kamu masukkan salah atau tidak terdaftar... \n\nSilahkan kirimkan ulang Kode Mata Kuliah kamu atau hubungi bagian administrasi ya :D."
+
+    return JSONResponse(content={
+        "fulfillmentText": fulfillment_text,
+    })
+       
