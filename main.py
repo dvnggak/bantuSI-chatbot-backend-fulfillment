@@ -134,6 +134,21 @@ def informations_select(parameters: dict, output_contexts: list):
                 )
             if not lecturers:
                 fulfillment_text += "Tidak ada data dosen yang tersedia saat ini."
+        elif information_item == "Profil Prodi" or information_item == "Deskripsi Profil":
+            profile_data = db_helper.get_profile()
+            fulfillment_text = (
+                f"Baik, Berikut adalah Profil Prodi Sistem Informasi : \n\n"
+                f"Program Studi : {profile_data[1]} \n"
+                f"Fakultas : {profile_data[2]} \n"
+                f"Universitas : {profile_data[3]} \n"
+                f"Tipe Program : {profile_data[4]} \n"
+                f"Akreditasi : {profile_data[5]} \n"
+                f"Durasi Studi : {profile_data[6]} \n"
+                f"Visi : {profile_data[7]} \n"
+                f"Misi : {profile_data[8]} \n"
+                f"Kompetensi Lulusan : {profile_data[9]} \n"
+                f"Keterangan : {profile_data[10]} \n"
+            )
         else:
             fulfillment_text = "Maaf, sepertinya informasi yang kamu minta belum tersedia... \n\nSilahkan pilih informasi yang tersedia ya :D."
     else:
@@ -150,7 +165,7 @@ def informations_select(parameters: dict, output_contexts: list):
     })
     
 def track_subject(parameters: dict):
-    subject_code = parameters["any"]
+    subject_code = parameters["subject-code"]
     subject_data = db_helper.get_subjects(subject_code)
 
     if subject_data:

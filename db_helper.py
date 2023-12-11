@@ -66,3 +66,21 @@ def get_lecturers():
 
     # return all the lecturers 
     return result
+
+def get_profile():
+    # create a cursor object 
+    cursor = cnx.cursor()
+    
+    # create a query to check if the user exists in the database
+    query = "SELECT * FROM majoring_profiles"
+    # execute the query
+    cursor.execute(query)
+
+    # fetch the result
+    result = cursor.fetchone()
+
+    # close the cursor and connection
+    cursor.close()
+
+    # return all the profile 
+    return result
