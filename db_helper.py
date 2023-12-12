@@ -122,3 +122,22 @@ def get_announcements_with_category(category: str):
 
     # return all the announcements
     return result
+
+def get_payment_guide():
+    # create a cursor object 
+    cursor = cnx.cursor()
+    
+    # create a query to get all payment guides
+    query = "SELECT * FROM payment_guides"
+
+    # execute the query
+    cursor.execute(query)
+
+    # fetch the result
+    result = cursor.fetchall()
+
+    # close the cursor and connection
+    cursor.close()
+
+    # return all the payment guides
+    return result

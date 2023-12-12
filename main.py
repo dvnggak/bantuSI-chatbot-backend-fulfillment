@@ -169,7 +169,26 @@ def informations_select(parameters: dict, output_contexts: list):
                 f"Jika IYA, saya bisa membantu mencari dengan menyesuaikan kategori pengumumannya !! :D \n\n"
                 f"Silahkan kiriimkan pesan seperti ini ya... \"Saya ingin mencari pengumuman dengan kategori Perkuliahan\" \n"
                 f"Maka saya bisa mengeluarkan seluruh pengumuman yang termasuk kedalam kategori tersebut :D !\n"
-            )      
+            )    
+        elif information_item == "Panduan Pembayaran":
+            payment_guide = db_helper.get_payment_guide()
+            fulfillment_text = (
+                f"Baik, Berikut adalah Informasi Panduan Pembayaran : \n\n"
+            )  
+            for guide in payment_guide:
+                # fetch all the data and append it to the fulfillment text
+                fulfillment_text += (
+                    f"=================================== \n"
+                    f"Judul Panduan : {guide[1]} \n"
+                    f"Deskripsi Panduan : {guide[2]} \n"
+                    f"Kategori Panduan Pembayaran: {guide[3]} \n"
+                    f"Angkatan : {guide[4]} \n"
+                    f"Tahun : {guide[5]} \n"
+                    f"Link Panduan : {guide[6]} \n "
+                    f"=================================== \n\n"
+                )
+            if not payment_guide:
+                fulfillment_text += "Tidak ada data panduan pembayaran yang tersedia saat ini."
         else:
             fulfillment_text = "Maaf, sepertinya informasi yang kamu minta belum tersedia... \n\nSilahkan pilih informasi yang tersedia ya :D."
     else:
