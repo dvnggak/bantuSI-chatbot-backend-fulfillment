@@ -84,3 +84,41 @@ def get_profile():
 
     # return all the profile 
     return result
+
+def get_newest_announcements():
+    # create a cursor object 
+    cursor = cnx.cursor()
+    
+    # create a query to get 1 newest announcements
+    query = "SELECT * FROM announcements ORDER BY id DESC LIMIT 1"
+
+    # execute the query
+    cursor.execute(query)
+
+    # fetch the result
+    result = cursor.fetchone()
+
+    # close the cursor and connection
+    cursor.close()
+
+    # return all the announcements
+    return result
+
+def get_announcements_with_category(category: str):
+    # create a cursor object 
+    cursor = cnx.cursor()
+    
+    # create a query to get all announcements with category
+    query = "SELECT * FROM announcements WHERE category = %s"
+
+    # execute the query
+    cursor.execute(query, (category,))
+
+    # fetch the result
+    result = cursor.fetchall()
+
+    # close the cursor and connection
+    cursor.close()
+
+    # return all the announcements
+    return result

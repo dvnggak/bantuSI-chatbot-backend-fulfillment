@@ -33,6 +33,8 @@ async def handle(request: Request):
         return informations_select(parameters, output_contexts)
     elif intent == "track-subject" :
         return track_subject(parameters)  
+    elif intent == "track-announcement-categories" :
+        return track_announcements(parameters)
 
 def get_or_generate_session_id(output_contexts: list):
     # Try to find the session ID in the output contexts
@@ -149,6 +151,25 @@ def informations_select(parameters: dict, output_contexts: list):
                 f"Kompetensi Lulusan : {profile_data[9]} \n"
                 f"Keterangan : {profile_data[10]} \n"
             )
+        elif information_item == "Pengumuman":
+            announcements = db_helper.get_newest_announcements()
+            fulfillment_text = (
+                f"Baik, Berikut adalah Pengumuman Terbaru : \n\n"
+                f"Kode Pengumuman : {announcements[1]} \n"
+                f"Judul Pengumuman : {announcements[2]} \n"
+                f"Tanggal Pengumuman : {announcements[3]} \n"
+                f"Kategori Pengumuman : {announcements[4]} \n"
+                f"Penerbit Pengumuman : {announcements[5]} \n"
+                f"Deskripsi Pengumuman : {announcements[6]} \n"
+                f"Link Pengumuman : {announcements[7]} \n\n"
+            )
+            # sent follow up message to ask for more information
+            fulfillment_text += (
+                f"Apakah Kakak ingin mencari Pengumuman yang lebih lebih spesifik ?\n"
+                f"Jika IYA, saya bisa membantu mencari dengan menyesuaikan kategori pengumumannya !! :D \n\n"
+                f"Silahkan kiriimkan pesan seperti ini ya... \"Saya ingin mencari pengumuman dengan kategori Perkuliahan\" \n"
+                f"Maka saya bisa mengeluarkan seluruh pengumuman yang termasuk kedalam kategori tersebut :D !\n"
+            )      
         else:
             fulfillment_text = "Maaf, sepertinya informasi yang kamu minta belum tersedia... \n\nSilahkan pilih informasi yang tersedia ya :D."
     else:
@@ -188,3 +209,28 @@ def track_subject(parameters: dict):
         "fulfillmentText": fulfillment_text,
     })
        
+def track_announcements(category :dict):
+    category = category["announcement_categories"]
+    announcements = db_helper.get_announcements_with_category(category)
+    fulfillment_text = (
+        f"Berikut adalah Pengumuman dengan Kategori {category} : \n\n"
+    )
+    for announcement in announcements:
+        # fetch all the data and append it to the fulfillment text
+        fulfillment_text += (
+            f"=================================== \n\n"
+            f"Kode Pengumuman : {announcement[1]} \n"
+            f"Judul Pengumuman : {announcement[2]} \n"
+            f"Tanggal Pengumuman : {announcement[3]} \n"
+            f"Kategori Pengumuman : {announcement[4]} \n"
+            f"Penerbit Pengumuman : {announcement[5]} \n"
+            f"Deskripsi Pengumuman : {announcement[6]} \n"
+            f"Link Pengumuman : {announcement[7]} \n\n"
+            f"=================================== \n\n"
+        )
+    if not announcements:
+        fulfillment_text += "Maaf, sepertinya tidak ada pengumuman dengan kategori tersebut saat ini..."
+        
+    return JSONResponse(content={
+        "fulfillmentText": fulfillment_text,
+    })
