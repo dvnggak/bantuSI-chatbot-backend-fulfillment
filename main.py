@@ -189,6 +189,28 @@ def informations_select(parameters: dict, output_contexts: list):
                 )
             if not payment_guide:
                 fulfillment_text += "Tidak ada data panduan pembayaran yang tersedia saat ini."
+        elif information_item == "Jadwal Pembayaran":
+            payment_schedule = db_helper.get_payment_schedule()
+            fulfillment_text = (
+                f"Baik, Berikut adalah Informasi Jadwal Pembayaran : \n\n"
+            )
+
+            for schedule in payment_schedule:
+                # fetch all the data and append it to the fulfillment text
+                fulfillment_text += (
+                    f"=================================== \n"
+                    f"Judul : {schedule[1]} \n"
+                    f"Penerbit : {schedule[2]} \n"
+                    f"Penerima : {schedule[3]} \n"
+                    f"Tahap : {schedule[4]} \n"
+                    f"Sejak : {schedule[5]} \n"
+                    f"Sampai : {schedule[6]} \n "
+                    f"Keterangan : {schedule[7]} \n "
+                    f"Link : {schedule[8]} \n "
+                    f"=================================== \n\n"
+                )
+            if not payment_schedule:
+                fulfillment_text += "Tidak ada data jadwal pembayaran yang tersedia saat ini."
         else:
             fulfillment_text = "Maaf, sepertinya informasi yang kamu minta belum tersedia... \n\nSilahkan pilih informasi yang tersedia ya :D."
     else:

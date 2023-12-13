@@ -141,3 +141,22 @@ def get_payment_guide():
 
     # return all the payment guides
     return result
+
+def get_payment_schedule():
+    # create a cursor object
+    cursor = cnx.cursor()
+
+    # create a query to get all payment schedule
+    query = "SELECT * FROM payment_schedules"
+
+    # execute the query
+    cursor.execute(query)
+
+    # fetch the result
+    result = cursor.fetchall()
+
+    # close the cursor and connection
+    cursor.close()
+
+    # return all the payment schedules
+    return result
