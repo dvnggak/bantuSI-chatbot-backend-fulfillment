@@ -53,18 +53,24 @@ def validate_user(parameters: dict, session_id: str ):
 
     if name:
         fulfillment_text = (
-            f"Halo kak {name} :D,\n\n"
-            "Saya dapat memberikan informasi tentang beberapa hal yang ada di Prodi Sistem Informasi, diantaranya :\n\n"
-            "1. Profil Prodi \n"
-            "-Deskripsi Profil \n -Struktur Organisasi\n -Daftar Dosen\n"
-            "2. Perkuliahan\n"
-            "-Skripsi\n -Kerja Praktek\n -Mata Kuliah\n"
-            "3. Pembayaran\n"
-            "-Panduan Pembayaran\n"
-            "-Jadwal Pembayaran\n"
-            "4. Pengumuman\n"
-            "5. Berkas - Berkas Akademik\n\n"
-            "Kamu bisa membalas pesan ini dengan menuliskan daftar informasi di atas seperti \"Berikan informasi mengenai Mata Kuliah\" ..."
+            f"Halo kak {name} \U0001F44B,\n\n"  # Unicode for waving hand emoji
+    "Saya dapat memberikan informasi tentang beberapa hal yang ada di Prodi Sistem Informasi, diantaranya:\n\n"
+    "    1. Profil Prodi \n"
+    "       - Deskripsi Profil \n"
+    "       - Struktur Organisasi\n"
+    "       - Daftar Dosen\n\n"
+    "    2. Perkuliahan\n"
+    "       - Syarat Skripsi\n"
+    "       - Panduan Skripsi\n"
+    "       - Syarat Kerja Praktek\n"
+    "       - Panduan Kerja Praktek\n"
+    "       - Mata Kuliah\n\n"
+    "    3. Pembayaran\n"
+    "       - Panduan Pembayaran\n"
+    "       - Jadwal Pembayaran\n\n"
+    "    4. Pengumuman\n\n"
+    "    5. Berkas - Berkas Akademik\n\n"
+    "Kamu bisa membalas pesan ini dengan menuliskan daftar informasi di atas seperti \"Berikan informasi mengenai Mata Kuliah\" \U0001F4DA..."
         )
         # Set the "validated" context if validation is successful
         output_contexts = [
