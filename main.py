@@ -69,8 +69,8 @@ def validate_user(parameters: dict, session_id: str ):
     "       - Panduan Pembayaran\n"
     "       - Jadwal Pembayaran\n\n"
     "    4. Pengumuman\n\n"
-    "    5. Berkas - Berkas Akademik\n\n"
-    "Kamu bisa membalas pesan ini dengan menuliskan daftar informasi di atas seperti \"Berikan informasi mengenai Mata Kuliah\" \U0001F4DA..."
+    "    5. Berkas Akademik\n\n"
+    "Kamu bisa membalas pesan ini dengan menuliskan daftar informasi di atas seperti \"Berikan informasi mengenai Mata Kuliah \U0001F4DA..."
         )
         # Set the "validated" context if validation is successful
         output_contexts = [
@@ -217,6 +217,99 @@ def informations_select(parameters: dict, output_contexts: list):
                 )
             if not payment_schedule:
                 fulfillment_text += "Tidak ada data jadwal pembayaran yang tersedia saat ini."
+        elif information_item == "Berkas Akademik":
+            files = db_helper.get_files()
+            fulfillment_text = (
+                f"Baik, Berikut adalah Informasi Berkas Akademik : \n\n"
+            )
+
+            for file in files:
+                # fetch all the data and append it to the fulfillment text
+                fulfillment_text += (
+                    f"=================================== \n"
+                    f"Kode : {file[1]} \n"
+                    f"Judul : {file[2]} \n"
+                    f"Tanggal : {file[3]} \n"
+                    f"Deskripsi : {file[4]} \n"
+                    f"Link : {file[5]} \n"
+                    f"=================================== \n\n"
+                )   
+
+            if not files:
+                fulfillment_text += "Tidak ada data berkas akademik yang tersedia saat ini."
+        elif information_item == "Syarat Skripsi":
+            skripsiRequisites = db_helper.get_skripsi_requisites()
+            fulfillment_text = (
+                f"Baik, Berikut adalah Informasi Syarat Skripsi : \n\n"
+            )
+
+            for requisite in skripsiRequisites:
+                # fetch all the data and append it to the fulfillment text
+                fulfillment_text += (
+                    f"=================================== \n"
+                    f"Kode : {requisite[1]} \n"
+                    f"Judul : {requisite[2]} \n"
+                    f"Deskripsi : {requisite[3]} \n"
+                    f"Link : {requisite[4]} \n"
+                    f"=================================== \n\n"
+                )
+            if not skripsiRequisites:
+                fulfillment_text += "Tidak ada data syarat skripsi yang tersedia saat ini."
+        elif information_item == "Panduan Skripsi":
+            skripsiGuides = db_helper.get_skripsi_guides()
+            fulfillment_text = (
+                f"Baik, Berikut adalah Informasi Panduan Skripsi : \n\n"
+            )
+
+            for guide in skripsiGuides:
+                # fetch all the data and append it to the fulfillment text
+                fulfillment_text += (
+                    f"=================================== \n"
+                    f"Kode : {guide[1]} \n"
+                    f"Judul : {guide[2]} \n"
+                    f"Deskripsi : {guide[3]} \n"
+                    f"Link : {guide[4]} \n"
+                    f"=================================== \n\n"
+                )
+            if not skripsiGuides:
+                fulfillment_text += "Tidak ada data panduan skripsi yang tersedia saat ini."
+        elif information_item == "Syarat Kerja Praktek":
+            internRequisites = db_helper.get_internship_requisites()
+            fulfillment_text = (
+                f"Baik, Berikut adalah Informasi Syarat Kerja Praktek : \n\n"
+            )
+
+            for requisite in internRequisites:
+                # fetch all the data and append it to the fulfillment text
+                fulfillment_text += (
+                    f"=================================== \n"
+                    f"Kode : {requisite[1]} \n"
+                    f"Judul : {requisite[2]} \n"
+                    f"Deskripsi : {requisite[3]} \n"
+                    f"Link : {requisite[4]} \n"
+                    f"=================================== \n\n"
+                )
+
+            if not internRequisites:
+                fulfillment_text += "Tidak ada data syarat kerja praktek yang tersedia saat ini."
+        elif information_item == "Panduan Kerja Praktek":
+            internGuides = db_helper.get_internship_guides()
+            fulfillment_text = (
+                f"Baik, Berikut adalah Informasi Panduan Kerja Praktek : \n\n"
+            )
+
+            for guide in internGuides:
+                # fetch all the data and append it to the fulfillment text
+                fulfillment_text += (
+                    f"=================================== \n"
+                    f"Kode : {guide[1]} \n"
+                    f"Judul : {guide[2]} \n"
+                    f"Deskripsi : {guide[3]} \n"
+                    f"Link : {guide[4]} \n"
+                    f"=================================== \n\n"
+                )
+            if not internGuides:
+                fulfillment_text += "Tidak ada data panduan kerja praktek yang tersedia saat ini."
         else:
             fulfillment_text = "Maaf, sepertinya informasi yang kamu minta belum tersedia... \n\nSilahkan pilih informasi yang tersedia ya :D."
     else:

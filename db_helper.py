@@ -160,3 +160,98 @@ def get_payment_schedule():
 
     # return all the payment schedules
     return result
+
+def get_files():
+    # create a cursor object
+    cursor = cnx.cursor()
+
+    # create a query to get all files
+    query = "SELECT * FROM files"
+
+    # execute the query
+    cursor.execute(query)
+
+    # fetch the result
+    result = cursor.fetchall()
+
+    # close the cursor and connection
+    cursor.close()
+
+    # return all the files
+    return result
+
+def get_skripsi_requisites():
+    # create a cursor object
+    cursor = cnx.cursor()
+
+    # create a query to get all syarat skripsi
+    query = "SELECT * FROM skripsi_requisites"
+
+    # execute the query
+    cursor.execute(query)
+
+    # fetch the result
+    result = cursor.fetchall()
+
+    # close the cursor and connection
+    cursor.close()
+
+    # return all the syarat skripsi
+    return result
+
+def get_skripsi_guides():
+    # create a cursor object
+    cursor = cnx.cursor()
+
+    # create a query to get all skripsi guides
+    query = "SELECT * FROM skripsi_guides"
+
+    # execute the query
+    cursor.execute(query)
+
+    # fetch the result
+    result = cursor.fetchall()
+
+    # close the cursor and connection
+    cursor.close()
+
+    # return all the skripsi guides
+    return result
+
+def get_internship_guides():
+    # create a cursor object
+    cursor = cnx.cursor()
+
+    # create a query to get all internship guides
+    query = "SELECT * FROM internship_guides"
+
+    # execute the query
+    cursor.execute(query)
+
+    # fetch the result
+    result = cursor.fetchall()
+
+    # close the cursor and connection
+    cursor.close()
+
+    # return all the internship guides
+    return result
+
+def get_internship_requisites():
+    # create a cursor object
+    cursor = cnx.cursor()
+
+    # create a query to get all internship requisites
+    query = "SELECT * FROM internship_requisites"
+
+    # execute the query
+    cursor.execute(query)
+
+    # fetch the result
+    result = cursor.fetchall()
+
+    # close the cursor and connection
+    cursor.close()
+
+    # return all the internship requisites
+    return result
