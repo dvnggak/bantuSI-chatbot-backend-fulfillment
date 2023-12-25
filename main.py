@@ -53,7 +53,7 @@ def validate_user(parameters: dict, session_id: str ):
 
     if name:
         fulfillment_text = (
-            f"Halo kak {name} \U0001F44B,\n\n"  # Unicode for waving hand emoji
+f"Halo kak {name} 🌟,\n\n"  # Unicode for a star emoji
     "Saya dapat memberikan informasi tentang beberapa hal yang ada di Prodi Sistem Informasi, diantaranya:\n\n"
     "    1. Profil Prodi \n"
     "       - Deskripsi Profil \n"
