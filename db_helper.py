@@ -261,7 +261,7 @@ def store_user_id(nim: int, user_id: int):
     cursor = cnx.cursor()
 
     # create a query to store user id
-    query = "INSERT INTO telegram_users (nim, user_id) VALUES (%s, %s) ON DUPLICATE KEY UPDATE user_id = VALUES(user_id)"
+    query = "INSERT IGNORE INTO telegram_users (nim, user_id) VALUES (%s, %s)"
 
     # execute the query
     cursor.execute(query, (nim, user_id))
