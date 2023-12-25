@@ -255,3 +255,21 @@ def get_internship_requisites():
 
     # return all the internship requisites
     return result
+
+def store_user_id(nim: int, user_id: int):
+    # create a cursor object
+    cursor = cnx.cursor()
+
+    # create a query to store user id
+    query = "INSERT INTO telegram_users (nim, user_id) VALUES (%s, %s)"
+
+    # execute the query
+    cursor.execute(query, (nim, user_id))
+
+    # commit the changes
+    cnx.commit()
+
+    # close the cursor and connection
+    cursor.close()
+
+

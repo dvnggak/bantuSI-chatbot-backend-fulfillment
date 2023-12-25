@@ -21,6 +21,7 @@ async def handle(request: Request):
     intent = payload["queryResult"]["intent"]["displayName"]
     parameters = payload["queryResult"]["parameters"]
     output_contexts = payload["queryResult"]["outputContexts"]
+    user_id = payload["originalDetectIntentRequest"]["payload"]["data"]["from"]["id"]
 
     # Get or generate the session ID
     session_id = get_or_generate_session_id(output_contexts)
@@ -28,7 +29,7 @@ async def handle(request: Request):
 
     # Perform the necessary logic based on the intent
     if intent == "validate.user" :
-        return validate_user(parameters, session_id)
+        return validate_user(parameters, session_id, user_id)
     elif intent == "informations.select" :
         return informations_select(parameters, output_contexts)
     elif intent == "track-subject" :
@@ -46,10 +47,13 @@ def get_or_generate_session_id(output_contexts: list):
     new_session_id = generate_session_id()
     return new_session_id
     
-def validate_user(parameters: dict, session_id: str ):
+def validate_user(parameters: dict, session_id: str, user_id: int):
 
     nim = parameters["number"]
     name = db_helper.check_user_exists(nim)
+    print(f"User {name} with NIM {nim} has logged in with Telegram ID {user_id}")
+    db_helper.store_user_id(nim, user_id)
+    #log the user id
 
     if name:
         fulfillment_text = (
@@ -91,6 +95,7 @@ f"Halo kak {name} 🌟,\n\n"  # Unicode for a star emoji
     return JSONResponse(content={
         "fulfillmentText": fulfillment_text,
         "outputContexts": output_contexts,
+        "telegram_user_id": user_id,
     })
 
 def informations_select(parameters: dict, output_contexts: list):
